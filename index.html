@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>ddp.js by mondora</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>ddp.js</h1>
+          <h2>Isomorphic JavaScript DDP client</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/mondora/ddp.js/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/mondora/ddp.js/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/mondora/ddp.js" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <p><a href="https://travis-ci.org/mondora/ddp.js"><img src="https://travis-ci.org/mondora/ddp.js.svg?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/r/mondora/ddp.js"><img src="https://coveralls.io/repos/mondora/ddp.js/badge.png" alt="Coverage Status"></a>
+<a href="https://codeclimate.com/github/mondora/ddp.js"><img src="https://codeclimate.com/github/mondora/ddp.js.png" alt="Code Climate"></a></p>
+
+<h1>
+<a id="warning" class="anchor" href="#warning" aria-hidden="true"><span class="octicon octicon-link"></span></a>WARNING</h1>
+
+<p>Breaking changes from 0.6.x to 1.0.0, <a href="https://github.com/mondora/ddp.js/blob/master/CHANGELOG.md">read the
+CHANGELOG</a> for more
+info.</p>
+
+<h1>
+<a id="ddpjs" class="anchor" href="#ddpjs" aria-hidden="true"><span class="octicon octicon-link"></span></a>ddp.js</h1>
+
+<p>A javascript isomorphic ddp client.</p>
+
+<h2>
+<a id="what-is-it-for" class="anchor" href="#what-is-it-for" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is it for?</h2>
+
+<p>The purpose of this library is:</p>
+
+<ul>
+<li>to set up and maintain a ddp connection with a ddp server, freeing the
+developer from having to do it on their own</li>
+<li>to give the developer a clear, consistent API to communicate with the ddp
+server</li>
+</ul>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<p>Via npm</p>
+
+<pre><code>npm install ddp.js
+</code></pre>
+
+<p>Or via bower</p>
+
+<pre><code>bower install ddp.js
+</code></pre>
+
+<h2>
+<a id="example-usage" class="anchor" href="#example-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example usage</h2>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> DDP <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">"</span>ddp.js<span class="pl-pds">"</span></span>);
+<span class="pl-s">var</span> options <span class="pl-k">=</span> {
+    endpoint<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>http://localhost:3000/websocket<span class="pl-pds">"</span></span>,
+    SocketConstructor<span class="pl-k">:</span> WebSocket
+};
+<span class="pl-s">var</span> ddp <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">DDP</span>(options);
+
+ddp.on(<span class="pl-s1"><span class="pl-pds">"</span>connected<span class="pl-pds">"</span></span>, <span class="pl-st">function</span> () {
+    <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>Connected<span class="pl-pds">"</span></span>);
+
+    <span class="pl-s">var</span> subId <span class="pl-k">=</span> ddp.<span class="pl-s3">sub</span>(<span class="pl-s1"><span class="pl-pds">"</span>myCollection<span class="pl-pds">"</span></span>);
+    ddp.on(<span class="pl-s1"><span class="pl-pds">"</span>ready<span class="pl-pds">"</span></span>, <span class="pl-st">function</span> (<span class="pl-vpf">message</span>) {
+        <span class="pl-k">if</span> (message.<span class="pl-sc">id</span> <span class="pl-k">===</span> subId) {
+            <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>Subscruption to myCollection ready<span class="pl-pds">"</span></span>);
+        }
+    });
+    ddp.on(<span class="pl-s1"><span class="pl-pds">"</span>added<span class="pl-pds">"</span></span>, <span class="pl-st">function</span> (<span class="pl-vpf">message</span>) {
+        <span class="pl-en">console</span><span class="pl-s3">.log</span>(message.collection);
+    });
+
+    <span class="pl-s">var</span> myLoginParams <span class="pl-k">=</span> {
+        user<span class="pl-k">:</span> {
+            email<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>user@example.com<span class="pl-pds">"</span></span>
+        },
+        password<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>hunter2<span class="pl-pds">"</span></span>
+    };
+    <span class="pl-s">var</span> methodId <span class="pl-k">=</span> ddp.<span class="pl-sc">method</span>(<span class="pl-s1"><span class="pl-pds">"</span>login<span class="pl-pds">"</span></span>, [myLoginParams]);
+    ddp.on(<span class="pl-s1"><span class="pl-pds">"</span>result<span class="pl-pds">"</span></span>, <span class="pl-st">function</span> (<span class="pl-vpf">message</span>) {
+        <span class="pl-k">if</span> (message.<span class="pl-sc">id</span> <span class="pl-k">===</span> methodId <span class="pl-k">&amp;&amp;</span> <span class="pl-k">!</span>message<span class="pl-s3">.error</span>) {
+            <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>Logged in!<span class="pl-pds">"</span></span>);
+        }
+    });
+});</pre></div>
+
+<h2>
+<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tests</h2>
+
+<p><code>npm test</code> to run tests, <code>npm run coverage</code> to generate the coverage report.</p>
+
+<h2>
+<a id="public-api" class="anchor" href="#public-api" aria-hidden="true"><span class="octicon octicon-link"></span></a>Public API</h2>
+
+<h3>
+<a id="new-ddpoptions" class="anchor" href="#new-ddpoptions" aria-hidden="true"><span class="octicon octicon-link"></span></a>new DDP(options)</h3>
+
+<p>Creates a new DDP instance. After being constructed, the instance will
+establish a connection with the DDP server and will try to maintain it open.</p>
+
+<h4>
+<a id="arguments" class="anchor" href="#arguments" aria-hidden="true"><span class="octicon octicon-link"></span></a>Arguments</h4>
+
+<ul>
+<li>
+<code>options</code> <strong>object</strong> <em>required</em>
+</li>
+</ul>
+
+<p>Available options are:</p>
+
+<ul>
+<li><p><code>endpoint</code> <strong>string</strong> <em>required</em>: the location of the websocket server. Its
+format depends on the type of socket you are using.</p></li>
+<li><p><code>SocketConstructor</code> <strong>function</strong> <em>required</em>: the constructor function that
+will be used to construct the socket. Meteor (currently the only DDP server
+available) supports websockets and SockJS sockets.  So, practically speaking,
+this means that on the browser you can use either the browser's native
+WebSocket constructor or the SockJS constructor provided by the SockJS
+library.  On the server you can use whichever library implements the
+websocket protocol (e.g.  faye-websocket).</p></li>
+</ul>
+
+<h4>
+<a id="returns" class="anchor" href="#returns" aria-hidden="true"><span class="octicon octicon-link"></span></a>Returns</h4>
+
+<p>A new DDP instance, which is also an <code>EventEmitter</code> instance.</p>
+
+<hr>
+
+<h3>
+<a id="ddpmethodname-params" class="anchor" href="#ddpmethodname-params" aria-hidden="true"><span class="octicon octicon-link"></span></a>DDP.method(name, params)</h3>
+
+<p>Calls a remote method.</p>
+
+<h4>
+<a id="arguments-1" class="anchor" href="#arguments-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Arguments</h4>
+
+<ul>
+<li><p><code>name</code> <strong>string</strong> <em>required</em>: name of the method to call.</p></li>
+<li><p><code>params</code> <strong>array</strong> <em>required</em>: parameters to pass to the remote method. Pass
+an empty array if you do not wish to pass any parameters.</p></li>
+</ul>
+
+<h4>
+<a id="returns-1" class="anchor" href="#returns-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Returns</h4>
+
+<p>The unique <code>id</code> (string) corresponding to the method call.</p>
+
+<hr>
+
+<h3>
+<a id="ddpsubname-params" class="anchor" href="#ddpsubname-params" aria-hidden="true"><span class="octicon octicon-link"></span></a>DDP.sub(name, params)</h3>
+
+<p>Subscribes to a server publication.</p>
+
+<h4>
+<a id="arguments-2" class="anchor" href="#arguments-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Arguments</h4>
+
+<ul>
+<li><p><code>name</code> <strong>string</strong> <em>required</em>: name of the server publication.</p></li>
+<li><p><code>params</code> <strong>array</strong> <em>required</em>: parameters to pass to the server publish
+function. Pass an empty array if you do not wish to pass any parameters.</p></li>
+</ul>
+
+<h4>
+<a id="returns-2" class="anchor" href="#returns-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Returns</h4>
+
+<p>The unique <code>id</code> (string) corresponding to the subscription call.</p>
+
+<hr>
+
+<h3>
+<a id="ddpunsubid" class="anchor" href="#ddpunsubid" aria-hidden="true"><span class="octicon octicon-link"></span></a>DDP.unsub(id)</h3>
+
+<p>Unsubscribes to a previously-subscribed server publication.</p>
+
+<h4>
+<a id="arguments-3" class="anchor" href="#arguments-3" aria-hidden="true"><span class="octicon octicon-link"></span></a>Arguments</h4>
+
+<ul>
+<li>
+<code>id</code> <strong>string</strong> <em>required</em>: id of the subscription.</li>
+</ul>
+
+<h4>
+<a id="returns-3" class="anchor" href="#returns-3" aria-hidden="true"><span class="octicon octicon-link"></span></a>Returns</h4>
+
+<p>The <code>id</code> corresponding to the subscription call (not of much use, but I return
+it for consistency).</p>
+
+<h2>
+<a id="public-events" class="anchor" href="#public-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Public events</h2>
+
+<h3>
+<a id="connection-events" class="anchor" href="#connection-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Connection events</h3>
+
+<ul>
+<li><p><code>connected</code>: emitted with no arguments when the DDP connection is
+established.</p></li>
+<li><p><code>disconnected</code>: emitted with no arguments when the DDP connection drops.</p></li>
+</ul>
+
+<h3>
+<a id="subscription-events" class="anchor" href="#subscription-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Subscription events</h3>
+
+<p>All the following events are emitted with one argument, the parsed DDP message.
+Further details can be found <a href="https://github.com/meteor/meteor/blob/devel/packages/ddp/DDP.md">on the DDP spec
+page</a>.</p>
+
+<ul>
+<li><code>ready</code></li>
+<li><code>nosub</code></li>
+<li><code>added</code></li>
+<li><code>changed</code></li>
+<li><code>removed</code></li>
+</ul>
+
+<h3>
+<a id="method-events" class="anchor" href="#method-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Method events</h3>
+
+<p>All the following events are emitted with one argument, the parsed DDP message.
+Further details can be found <a href="https://github.com/meteor/meteor/blob/devel/packages/ddp/DDP.md">on the DDP spec
+page</a>.</p>
+
+<ul>
+<li><code>result</code></li>
+<li><code>updated</code></li>
+</ul>
+        </section>
+
+        <footer>
+          ddp.js is maintained by <a href="https://github.com/mondora">mondora</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
