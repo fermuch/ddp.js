@@ -8,9 +8,6 @@ var webpack = require("webpack");
 var build = function (minify, callback) {
     webpack({
         entry: "./src/ddp.js",
-        externals: {
-            "wolfy87-eventemitter": "umd wolfy87-eventemitter"
-        },
         module: {
             loaders: [{
                 test: /\.js$/,
